@@ -1,0 +1,36 @@
+---------------------------- environment Script ---------------------------------
+
+// create a Virtual environment
+python -m venv venv
+
+// activate that Virtual environment
+venv\Scripts\activate
+
+// install all libraries 
+pip install -r requirements.txt
+
+// check installed libraries
+pip list
+
+
+----------------------------- Django Script ---------------------------------
+
+// Create Django Project
+django-admin startproject config .
+
+// Create django apps 
+python manage.py startapp accounts
+python manage.py startapp crm
+python manage.py startapp activity
+
+// migration the individual apps
+python manage.py makemigrations accounts
+python manage.py makemigrations crm
+python manage.py makemigrations activity
+
+// migrate the apps
+python manage.py migrate
+
+// run server
+python manage.py runserver
+
