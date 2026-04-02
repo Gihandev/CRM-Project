@@ -6,19 +6,21 @@ from .models import User, Organization
 
 # serialize organization and user data to JSON and back
 class OrganizationSerializer(serializers.ModelSerializer):
-    # fields for JSON response
+    user_count = serializers.SerializerMethodField()  
+
     class Meta:
         model = Organization
-        fields = ['id', 'name', 'subscription_plan', 'created_at']
+        fields = ['id', 'name', 'subscription_plan', 'created_at', 'user_count']
+
+    def get_user_count(self, obj):   
+        return obj.users.count()
+
 
 
 # serialize user data to JSON and back
 class RegisterSerializer(serializers.ModelSerializer):
   # used for user registration, includes organization name 
-    org_name = serializers.CharField(
-        write_only=True,  
-        required=True
-    )
+    org_name = serializers.CharField(write_only=True, required=True)
 
     password = serializers.CharField(
         write_only=True,  # Don't include password in API responses
@@ -87,3 +89,50 @@ class AddUserSerializer(serializers.ModelSerializer):
 
         # return the newly created user
         return user
+
+
+# serialize user data to JSON and back
+class UpdateUserSerializer(serializers.ModelSerializer):
+    # fields for JSON response 
+    class Meta:
+        model  = User
+        fields = ['username', 'email', 'role']
+
+
+# serialize organization data to JSON and back
+class CreateOrganizationSerializer(serializers.ModelSerializer):
+    # Admin username for the new org
+    admin_username = serializers.CharField(write_only=True)
+    admin_password = serializers.CharField(
+        write_only=True,
+        validators=[validate_password]
+    )
+    admin_email = serializers.EmailField(write_only=True, required=False)
+
+# field for JSON response
+    class Meta:
+        model  = Organization
+        fields = [
+            'name', 'subscription_plan',
+            'admin_username', 'admin_password', 'admin_email'
+        ]
+
+    def create(self, validated_data):
+        admin_username = validated_data.pop('admin_username')
+        admin_password = validated_data.pop('admin_password')
+        admin_email    = validated_data.pop('admin_email', '')
+
+        # Create organization
+        organization = Organization.objects.create(**validated_data)
+
+        # Create admin user for that org
+        User.objects.create_user(
+            username=admin_username,
+            email=admin_email,
+            password=admin_password,
+            organization=organization,
+            role='admin'
+        )
+        return organization
+
+        

@@ -7,29 +7,9 @@ import {
 } from '../api/companiesApi'
 
 export const companyService = {
-
-  async getAll(params) {
-    const res = await getCompaniesApi(params)
-    return res.data   // { count, page, results }
-  },
-
-  async getOne(id) {
-    const res = await getCompanyApi(id)
-    return res.data   // company with contacts inside
-  },
-
-  async create(data) {
-    const res = await createCompanyApi(data)
-    return res.data
-  },
-
-  async update(id, data) {
-    const res = await updateCompanyApi(id, data)
-    return res.data
-  },
-
-  async remove(id) {
-    const res = await deleteCompanyApi(id)
-    return res.data
-  },
+  async getAll(params) { return (await getCompaniesApi(params)).data },
+  async getOne(id)     { return (await getCompanyApi(id)).data },
+  async create(data)   { return (await createCompanyApi(data)).data },
+  async update(id, data){ return (await updateCompanyApi(id, data)).data },
+  async remove(id)     { return (await deleteCompanyApi(id)).data },
 }

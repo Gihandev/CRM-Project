@@ -3,20 +3,21 @@ import { useEffect } from 'react'
 import useAuthStore from './store/authStore'
 import { authService } from './services/authService'
 
-import Login         from './pages/Login'
-import Register      from './pages/Register'
-import Dashboard     from './pages/Dashboard'
-import Companies     from './pages/Companies'
-import CompanyDetail from './pages/CompanyDetail'
-import ActivityLog   from './pages/ActivityLog'
+import Login          from './pages/Login'
+import Register       from './pages/Register'
+import Dashboard      from './pages/Dashboard'
+import Companies      from './pages/Companies'
+import CompanyDetail  from './pages/CompanyDetail'
+import ActivityLog    from './pages/ActivityLog'
+import Users          from './pages/Users'
+import Organizations  from './pages/Organizations'
 import ProtectedRoute from './routes/ProtectedRoute'
 
 function App() {
   const { setUser, isAuthenticated } = useAuthStore()
 
   useEffect(() => {
-    // On every page refresh, try to restore the user session
-    // by fetching profile using the saved token
+    // Restore session on page refresh
     const token = localStorage.getItem('access_token')
     if (token && !isAuthenticated) {
       authService.getProfile()
@@ -28,12 +29,11 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-
-        {/* Public pages — no login needed */}
+        {/* Public */}
         <Route path="/login"    element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        {/* Protected pages — must be logged in */}
+        {/* Protected */}
         <Route path="/dashboard"
           element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path="/companies"
@@ -42,11 +42,14 @@ function App() {
           element={<ProtectedRoute><CompanyDetail /></ProtectedRoute>} />
         <Route path="/activity"
           element={<ProtectedRoute><ActivityLog /></ProtectedRoute>} />
+        <Route path="/users"
+          element={<ProtectedRoute><Users /></ProtectedRoute>} />
+        <Route path="/organizations"
+          element={<ProtectedRoute><Organizations /></ProtectedRoute>} />
 
-        {/* Default redirect */}
+        {/* Redirects */}
         <Route path="/"  element={<Navigate to="/dashboard" replace />} />
         <Route path="*"  element={<Navigate to="/dashboard" replace />} />
-
       </Routes>
     </BrowserRouter>
   )
